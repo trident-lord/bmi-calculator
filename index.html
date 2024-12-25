@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #e0ffff, #cce0ff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .warning {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BMI Calculator</h1>
+        <label for="age">Age (years):</label>
+        <input type="number" id="age" placeholder="Enter your age"><br>
+
+        <label for="height">Height:</label>
+        <input type="number" id="height" placeholder="Enter height (cm or inches)"><br>
+        <select id="heightUnit">
+            <option value="cm">cm</option>
+            <option value="inches">inches</option>
+        </select><br>
+
+        <label for="weight">Weight:</label>
+        <input type="number" id="weight" placeholder="Enter weight (kg or lbs)"><br>
+        <select id="weightUnit">
+            <option value="kg">kg</option>
+            <option value="lbs">lbs</option>
+        </select><br>
+
+        <button onclick="calculateBMI()">Calculate BMI</button>
+
+        <div class="results">
+            <p id="bmi"></p>
+            <p id="idealWeight"></p>
+            <p id="targetWarning"></p>
+            <p id="targetDays"></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateBMI() {
+            // Get user inputs
+            var age = parseFloat(document.getElementById("age").value);
+            var height = parseFloat(document.getElementById("height").value);
+            var heightUnit = document.getElementById("heightUnit").value;
+            var weight = parseFloat(document.getElementById("weight").value);
+            var weightUnit = document.getElementById("weightUnit").value;
+
+            // Convert to metric for calculation
+            if (heightUnit === "inches") {
+                height = height * 2.54; // Convert inches to cm
+            }
+            if (weightUnit === "lbs") {
+                weight = weight * 0.453592; // Convert lbs to kg
+            }
+
+            // Calculate BMI
+            var bmi = weight / ((height / 100) * (height / 100));
+
+            // Calculate ideal weight based on age and gender (placeholder, needs refinement)
+            var idealWeight = 22 * ((height / 100) * (height / 100)); // Example formula, adjust as needed
+
+            // Display BMI and ideal weight
+            document.getElementById("bmi").innerHTML = "Your BMI is: " + bmi.toFixed(2);
+            document.getElementById("idealWeight").innerHTML = "Your ideal weight is approximately: " + idealWeight.toFixed(2) + " kg";
+
+            // Get target weight and validate
+            var targetWeight = prompt("Enter your target weight (kg):");
+            if (targetWeight !== null) { 
+                targetWeight = parseFloat(targetWeight);
+
+                if (isNaN(targetWeight)) {
+                    alert("Invalid target weight entered.");
+                    return;
+                }
+
+                // Check if target weight is within healthy BMI range
+                var targetBMI = targetWeight / ((height / 100) * (height / 100));
+                if (targetBMI < 18.5 || targetBMI > 24.9) {
+                    document.getElementById("targetWarning").innerHTML = "<span class='warning'>Warning: Your target weight is outside the healthy BMI range (18.5-24.9).</span>";
+                } else {
+                    document.getElementById("targetWarning").innerHTML = "<span class='success'>Your target weight is within the healthy BMI range.</span>";
+                }
+
+                // Calculate days to reach target weight
+                var weightDifference = targetWeight - weight;
+                var calorieDifferencePerDay = 500; 
+                var daysToTarget = Math.abs(weightDifference * 7700 / calorieDifferencePerDay); // 1 kg fat ~= 7700 kCal
+
+                document.getElementById("targetDays").innerHTML = "Estimated days to reach your target: " + Math.round(daysToTarget);
+            }
+        }
+    </script>
+</body>
+</html>
+
